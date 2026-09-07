@@ -1,0 +1,32 @@
+{
+  "name": "MindFlow Lite",
+  "short_name": "MindFlow",
+  "description": "생각을 빠르게 적고, 구조화하고, 다시 꺼내는 개인용 마인드맵 노트",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f0fb",
+  "theme_color": "#7c4dff",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

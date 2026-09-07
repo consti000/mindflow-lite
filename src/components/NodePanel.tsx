@@ -1,0 +1,36 @@
+import { byId } from '../lib/tree'
+import { useApp } from '../state/AppStore'
+
+export function NodePanel() {
+  const { map, selectedId, updateNode } = useApp()
+  const node = map && selectedId ? byId(map.nodes, selectedId) : undefined
+
+  if (!node) {
+    return (
+      <aside className="panel">
+        <h2>노드 상세</h2>
+        <p className="panel-empty">
+          노드를 선택하면 제목과 메모를 여기서 적을 수 있습니다. 노트북은 키보드, 태블릿은 더블 탭으로 빠르게 편집하세요.
+        </p>
+      </aside>
+    )
+  }
+
+  return (
+    <aside className="panel">
+      <h2>노드 상세</h2>
+      <input
+        className="panel-title"
+        value={node.title}
+        onChange={(e) => updateNode(node.id, { title: e.target.value })}
+        placeholder="제목"
+      />
+      <textarea
+        className="panel-note"
+        value={node.note}
+        onChange={(e) => updateNode(node.id, { note: e.target.value })}
+        placeholder="간단한 메모"
+      />
+    </aside>
+  )
+}
