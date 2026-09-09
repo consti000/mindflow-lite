@@ -887,3 +887,17 @@ button {
   color: var(--primary-2);
   font-weight: 700;
 }
+
+.home-mobile-nav .primary-btn {
+  background: linear-gradient(180deg, #8b61ff, var(--primary));
+  color: #fff;
+  font-weight: 700;
+  gap: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 6px 14px rgba(124, 77, 255, 0.28);
+}
+
+.home-mobile-nav .primary-btn svg {
+  width: 14px;
+  height: 14px;
+}

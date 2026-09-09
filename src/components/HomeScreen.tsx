@@ -117,7 +117,7 @@ export function HomeScreen() {
         </button>
         <button onClick={() => setSearchOpen(true)}>검색</button>
         <button className="primary-btn" onClick={() => void createMap()}>
-          새 맵
+          <IconPlus /> 새 맵
         </button>
         <button onClick={() => setFolderFilter('drafts')}>초안</button>
       </nav>
