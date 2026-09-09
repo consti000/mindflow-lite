@@ -67,6 +67,15 @@ export function IconChild() {
   )
 }
 
+export function IconFree() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4.5" y="4.5" width="8" height="8" rx="2" />
+      <path d="M16 13v6M13 16h6" />
+    </svg>
+  )
+}
+
 export function IconSibling() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

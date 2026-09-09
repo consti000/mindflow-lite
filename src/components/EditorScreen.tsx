@@ -6,6 +6,7 @@ import {
   IconBack,
   IconChild,
   IconExport,
+  IconFree,
   IconRedo,
   IconSearch,
   IconSibling,
@@ -33,6 +34,7 @@ export function EditorScreen() {
     redo,
     addChild,
     addSibling,
+    addFreeNode,
     deleteNode,
     select,
     startEdit,
@@ -135,6 +137,7 @@ export function EditorScreen() {
     editingId,
     addChild,
     addSibling,
+    addFreeNode,
     deleteNode,
     undo,
     redo,
@@ -190,6 +193,9 @@ export function EditorScreen() {
         </button>
         <button onClick={() => addSibling()}>
           <IconSibling /> 형제
+        </button>
+        <button onClick={() => addFreeNode()}>
+          <IconFree /> 독립
         </button>
         <button onClick={() => deleteNode()}>
           <IconTrash /> 삭제

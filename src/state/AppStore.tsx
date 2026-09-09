@@ -13,7 +13,7 @@ import { createBlankMap, deleteMap as dbDelete, getMap, listMaps, saveMap } from
 import { uid } from '../lib/id'
 import { autoLayout } from '../lib/layout'
 import { TEMPLATES, welcomeMap } from '../lib/templates'
-import { byId, childrenOf, descendants, rootOf } from '../lib/tree'
+import { byId, childrenOf, descendants, isPrimaryRoot, rootOf, rootsOf } from '../lib/tree'
 
 type Screen = 'home' | 'editor'
 
@@ -47,10 +47,12 @@ type AppApi = {
   select: (id: string | null) => void
   startEdit: (id: string) => void
   stopEdit: () => void
-  updateNode: (id: string, patch: Partial<Pick<MapNode, 'title' | 'note' | 'x' | 'y'>>) => void
+  updateNode: (id: string, patch: Partial<Pick<MapNode, 'title' | 'note' | 'x' | 'y' | 'w' | 'h'>>) => void
   moveNode: (id: string, x: number, y: number) => void
+  resizeNode: (id: string, next: { w: number; h: number; x: number; y: number }) => void
   addChild: (parentId?: string) => void
   addSibling: (id?: string) => void
+  addFreeNode: (x?: number, y?: number) => void
   deleteNode: (id?: string) => void
   align: () => void
   undo: () => void
@@ -249,6 +251,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
           true,
         )
       },
+      resizeNode: (id, next) => {
+        mutate(
+          (m) => ({
+            ...m,
+            nodes: m.nodes.map((n) => (n.id === id ? { ...n, ...next } : n)),
+          }),
+          true,
+        )
+      },
       addChild: (parentId) => {
         const current = mapRef.current
         if (!current) return
@@ -267,14 +278,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const target = byId(current.nodes, targetId)
         if (!target) return
         if (!target.parentId) {
-          const child = newNode(target.id, current.nodes)
-          mutate((m) => ({ ...m, nodes: autoLayout([...m.nodes, child]) }))
-          setSelectedId(child.id)
-          setEditingId(child.id)
+          if (isPrimaryRoot(current.nodes, target.id)) {
+            const child = newNode(target.id, current.nodes)
+            mutate((m) => ({ ...m, nodes: autoLayout([...m.nodes, child]) }))
+            setSelectedId(child.id)
+            setEditingId(child.id)
+            return
+          }
+          const n = newFreeNode(target.x + 200, target.y)
+          mutate((m) => ({ ...m, nodes: [...m.nodes, n] }))
+          setSelectedId(n.id)
+          setEditingId(n.id)
           return
         }
         const n = newNode(target.parentId, current.nodes)
         mutate((m) => ({ ...m, nodes: autoLayout([...m.nodes, n]) }))
+        setSelectedId(n.id)
+        setEditingId(n.id)
+      },
+      addFreeNode: (x, y) => {
+        const current = mapRef.current
+        if (!current) return
+        const roots = rootsOf(current.nodes)
+        const last = roots[roots.length - 1]
+        const nx = x ?? (last ? last.x + 220 : 0)
+        const ny = y ?? (last ? last.y + (roots.length > 1 ? 40 : 180) : 0)
+        const n = newFreeNode(nx, ny)
+        mutate((m) => ({ ...m, nodes: [...m.nodes, n] }))
         setSelectedId(n.id)
         setEditingId(n.id)
       },
@@ -284,13 +314,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const targetId = id ?? selectedId
         if (!targetId) return
         const target = byId(current.nodes, targetId)
-        if (!target || !target.parentId) return
+        if (!target) return
+        if (!target.parentId) {
+          const roots = rootsOf(current.nodes)
+          if (isPrimaryRoot(current.nodes, target.id) || roots.length <= 1) return
+        }
         const drop = new Set([targetId, ...descendants(current.nodes, targetId).map((n) => n.id)])
         mutate((m) => ({
           ...m,
           nodes: autoLayout(m.nodes.filter((n) => !drop.has(n.id))),
         }))
-        setSelectedId(target.parentId)
+        const next = target.parentId ?? rootOf(current.nodes.filter((n) => !drop.has(n.id)))?.id ?? null
+        setSelectedId(next)
         setEditingId(null)
       },
       align: () => mutate((m) => ({ ...m, nodes: autoLayout(m.nodes) })),
@@ -337,6 +372,18 @@ function newNode(parentId: string, nodes: MapNode[]): MapNode {
     note: '',
     x: 0,
     y: 0,
+    createdAt: Date.now(),
+  }
+}
+
+function newFreeNode(x: number, y: number): MapNode {
+  return {
+    id: uid(),
+    parentId: null,
+    title: '새 메모',
+    note: '',
+    x,
+    y,
     createdAt: Date.now(),
   }
 }

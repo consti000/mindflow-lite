@@ -7,6 +7,10 @@ export type MapNode = {
   note: string
   x: number
   y: number
+  /** 사용자가 직접 정한 너비. 없으면 제목에 맞춰 자동 */
+  w?: number
+  /** 사용자가 직접 정한 높이. 본문보다 작으면 본문에 맞춤 */
+  h?: number
   createdAt: number
 }
 

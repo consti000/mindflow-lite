@@ -6,8 +6,16 @@ export function childrenOf(nodes: MapNode[], parentId: string | null): MapNode[]
     .sort((a, b) => a.createdAt - b.createdAt)
 }
 
+export function rootsOf(nodes: MapNode[]): MapNode[] {
+  return nodes.filter((n) => n.parentId === null).sort((a, b) => a.createdAt - b.createdAt)
+}
+
 export function rootOf(nodes: MapNode[]): MapNode | undefined {
-  return nodes.find((n) => n.parentId === null)
+  return rootsOf(nodes)[0]
+}
+
+export function isPrimaryRoot(nodes: MapNode[], id: string): boolean {
+  return rootOf(nodes)?.id === id
 }
 
 export function byId(nodes: MapNode[], id: string): MapNode | undefined {
@@ -66,8 +74,7 @@ export function outlineRows(nodes: MapNode[]): { node: MapNode; depth: number }[
       walk(n.id, depth + 1)
     }
   }
-  const root = rootOf(nodes)
-  if (root) {
+  for (const root of rootsOf(nodes)) {
     rows.push({ node: root, depth: 0 })
     walk(root.id, 1)
   }

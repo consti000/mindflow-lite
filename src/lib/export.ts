@@ -1,5 +1,5 @@
 import type { MindMap, MapNode } from '../types'
-import { nodeSize } from './layout'
+import { nodeSize, sizedNode, wrapTitle } from './layout'
 import { firstLevelIndex, rootOf } from './tree'
 import { BRANCH_COLORS } from '../types'
 
@@ -56,7 +56,7 @@ export function mapToSvg(map: MindMap): { svg: string; width: number; height: nu
   let maxX = -Infinity
   let maxY = -Infinity
   for (const n of map.nodes) {
-    const { w, h } = nodeSize(n.title)
+    const { w, h } = nodeSize(sizedNode(map.nodes, n))
     minX = Math.min(minX, n.x - w / 2)
     maxX = Math.max(maxX, n.x + w / 2)
     minY = Math.min(minY, n.y - h / 2)
@@ -79,8 +79,8 @@ export function mapToSvg(map: MindMap): { svg: string; width: number; height: nu
     if (!n.parentId) continue
     const p = map.nodes.find((x) => x.id === n.parentId)
     if (!p) continue
-    const pw = nodeSize(p.title).w
-    const nw = nodeSize(n.title).w
+    const pw = nodeSize(sizedNode(map.nodes, p)).w
+    const nw = nodeSize(sizedNode(map.nodes, n)).w
     const dir = n.x >= p.x ? 1 : -1
     const sx = p.x + ox + (dir * pw) / 2
     const sy = p.y + oy
@@ -94,7 +94,7 @@ export function mapToSvg(map: MindMap): { svg: string; width: number; height: nu
   }
 
   const cards = map.nodes.map((n) => {
-    const { w, h } = nodeSize(n.title)
+    const { w, h } = nodeSize(sizedNode(map.nodes, n))
     const x = n.x + ox - w / 2
     const y = n.y + oy - h / 2
     const isRoot = n.id === root?.id
@@ -102,11 +102,20 @@ export function mapToSvg(map: MindMap): { svg: string; width: number; height: nu
     const color = isRoot
       ? BRANCH_COLORS[0]
       : BRANCH_COLORS[Math.max(0, idx) % BRANCH_COLORS.length]
-    const title = escapeXml(n.title || '이름 없음')
+    const fontSize = isRoot ? 16 : 14
+    const lineH = fontSize * 1.35
+    const lines = wrapTitle(n.title || '이름 없음', w - 28, fontSize)
+    const startY = n.y + oy - ((lines.length - 1) * lineH) / 2 + 5
+    const tspans = lines
+      .map(
+        (line, i) =>
+          `<tspan x="${n.x + ox}" y="${startY + i * lineH}">${escapeXml(line)}</tspan>`,
+      )
+      .join('')
     return `
       <g>
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${isRoot ? '#7c4dff' : '#ffffff'}" stroke="${isRoot ? '#7c4dff' : color.line}" stroke-width="${isRoot ? 0 : 1.5}"/>
-        <text x="${n.x + ox}" y="${n.y + oy + 5}" text-anchor="middle" font-family="Pretendard, Segoe UI, sans-serif" font-size="${isRoot ? 16 : 14}" font-weight="${isRoot ? 700 : 600}" fill="${isRoot ? '#ffffff' : '#1d1633'}">${title}</text>
+        <text text-anchor="middle" font-family="Pretendard, Segoe UI, sans-serif" font-size="${fontSize}" font-weight="${isRoot ? 700 : 600}" fill="${isRoot ? '#ffffff' : '#1d1633'}">${tspans}</text>
       </g>`
   })
 

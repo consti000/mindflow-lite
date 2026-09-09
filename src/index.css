@@ -413,8 +413,7 @@ button {
 .node {
   position: absolute;
   transform: translate(-50%, -50%);
-  min-width: 132px;
-  max-width: 240px;
+  min-width: 96px;
   min-height: 48px;
   padding: 10px 14px;
   border-radius: 16px;
@@ -424,18 +423,24 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: stretch;
   gap: 2px;
   user-select: none;
   cursor: pointer;
   z-index: 1;
+  overflow: visible;
 }
 
 .node.root {
   background: linear-gradient(180deg, #8b61ff, var(--primary));
   color: #fff;
   border-color: transparent;
-  min-width: 160px;
   box-shadow: 0 14px 30px rgba(124, 77, 255, 0.28);
+}
+
+.node.free {
+  border-style: dashed;
+  border-color: #b8a9d6;
 }
 
 .node.selected {
@@ -443,13 +448,55 @@ button {
   z-index: 2;
 }
 
+.node.root .node-title,
+.node.root .node-input {
+  font-size: 16px;
+}
+
 .node-title {
   font-weight: 700;
   font-size: 14px;
   line-height: 1.35;
   letter-spacing: -0.02em;
-  word-break: keep-all;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  width: 100%;
 }
+
+.node-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  z-index: 4;
+}
+
+.node-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.3px;
+  height: 3.3px;
+  border-radius: 1px;
+  background: #ffd400;
+  border: 0.6px solid #e6b800;
+  box-shadow: 0 0 0 0.5px rgba(80, 60, 0, 0.25);
+  transform: translate(-50%, -50%) scale(calc(1 / var(--zoom, 1)));
+}
+
+.node-handle-nw { left: 0; top: 0; cursor: nwse-resize; transform: translate(-50%, -50%); }
+.node-handle-n { left: 50%; top: 0; cursor: ns-resize; transform: translate(-50%, -50%); }
+.node-handle-ne { left: 100%; top: 0; cursor: nesw-resize; transform: translate(-50%, -50%); }
+.node-handle-e { left: 100%; top: 50%; cursor: ew-resize; transform: translate(-50%, -50%); }
+.node-handle-se { left: 100%; top: 100%; cursor: nwse-resize; transform: translate(-50%, -50%); }
+.node-handle-s { left: 50%; top: 100%; cursor: ns-resize; transform: translate(-50%, -50%); }
+.node-handle-sw { left: 0; top: 100%; cursor: nesw-resize; transform: translate(-50%, -50%); }
+.node-handle-w { left: 0; top: 50%; cursor: ew-resize; transform: translate(-50%, -50%); }
 
 .node-note-dot {
   width: 6px;
@@ -461,12 +508,21 @@ button {
 
 .node-input {
   width: 100%;
+  height: 100%;
+  min-height: 1.4em;
   border: 0;
   outline: none;
   background: transparent;
   color: inherit;
   font-weight: 700;
   font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .float-tools {
