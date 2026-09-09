@@ -3,7 +3,7 @@ import { BRANCH_COLORS, type MapNode } from '../types'
 import { applyResize, nodeSize, sizedNode, subtreeBounds, type ResizeHandle } from '../lib/layout'
 import { byId, childrenOf, firstLevelIndex, isPrimaryRoot, rootsOf } from '../lib/tree'
 import { useApp } from '../state/AppStore'
-import { IconAlign, IconCenter, IconChild, IconFree, IconSibling } from './Icons'
+import { IconAlign, IconCenter, IconChild, IconFree, IconSibling, IconTrash, IconX } from './Icons'
 
 const MIN_Z = 0.25
 const MAX_Z = 2.4
@@ -22,6 +22,7 @@ export function MindCanvas() {
     addChild,
     addSibling,
     addFreeNode,
+    deleteNode,
     align,
   } = useApp()
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -430,6 +431,22 @@ export function MindCanvas() {
                       />
                     ))
                   : null}
+                {selected && !isRoot ? (
+                  <button
+                    type="button"
+                    className="node-delete"
+                    title={childrenOf(nodes, n.id).length ? '이 노드와 하위 가지 삭제' : '이 노드 삭제'}
+                    aria-label={`${n.title || '이름 없음'} 삭제`}
+                    data-delete-node={n.id}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteNode(n.id)
+                    }}
+                  >
+                    <IconX />
+                  </button>
+                ) : null}
               </div>
             )
           })}
@@ -457,6 +474,14 @@ export function MindCanvas() {
           }}
         >
           <IconFree />
+        </button>
+        <button
+          className="icon-btn"
+          title="선택한 노드 삭제"
+          disabled={!selectedId || isPrimaryRoot(map.nodes, selectedId)}
+          onClick={() => selectedId && deleteNode(selectedId)}
+        >
+          <IconTrash />
         </button>
         <button className="icon-btn" title="자동 정렬" onClick={() => align()}>
           <IconAlign />

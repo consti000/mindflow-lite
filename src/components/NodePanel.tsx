@@ -1,11 +1,12 @@
-import { byId } from '../lib/tree'
+import { byId, childrenOf, isPrimaryRoot } from '../lib/tree'
 import { useApp } from '../state/AppStore'
+import { IconTrash } from './Icons'
 
 export function NodePanel() {
-  const { map, selectedId, updateNode } = useApp()
+  const { map, selectedId, updateNode, deleteNode } = useApp()
   const node = map && selectedId ? byId(map.nodes, selectedId) : undefined
 
-  if (!node) {
+  if (!map || !node) {
     return (
       <aside className="panel">
         <h2>노드 상세</h2>
@@ -15,6 +16,9 @@ export function NodePanel() {
       </aside>
     )
   }
+
+  const canDelete = !isPrimaryRoot(map.nodes, node.id)
+  const hasKids = childrenOf(map.nodes, node.id).length > 0
 
   return (
     <aside className="panel">
@@ -31,6 +35,16 @@ export function NodePanel() {
         onChange={(e) => updateNode(node.id, { note: e.target.value })}
         placeholder="간단한 메모"
       />
+      <button
+        type="button"
+        className="ghost-btn panel-delete"
+        disabled={!canDelete}
+        title={canDelete ? undefined : '중심 노드는 삭제할 수 없습니다'}
+        onClick={() => deleteNode(node.id)}
+      >
+        <IconTrash />
+        {canDelete ? (hasKids ? '이 노드와 하위 가지 삭제' : '이 노드 삭제') : '중심 노드는 삭제할 수 없음'}
+      </button>
     </aside>
   )
 }
