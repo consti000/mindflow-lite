@@ -115,7 +115,7 @@ export function mapToSvg(map: MindMap): { svg: string; width: number; height: nu
     return `
       <g>
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${isRoot ? '#7c4dff' : '#ffffff'}" stroke="${isRoot ? '#7c4dff' : color.line}" stroke-width="${isRoot ? 0 : 1.5}"/>
-        <text text-anchor="middle" font-family="Pretendard, Segoe UI, sans-serif" font-size="${fontSize}" font-weight="${isRoot ? 700 : 600}" fill="${isRoot ? '#ffffff' : '#1d1633'}">${tspans}</text>
+        <text text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="${isRoot ? 700 : 600}" fill="${isRoot ? '#ffffff' : '#1d1633'}">${tspans}</text>
       </g>`
   })
 

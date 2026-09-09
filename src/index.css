@@ -30,7 +30,7 @@ body,
 }
 
 body {
-  font-family: 'Pretendard Variable', Pretendard, 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;

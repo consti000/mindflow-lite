@@ -30,7 +30,7 @@ function measure(text: string, fontSize: number): number {
     measureCtx = canvas.getContext('2d')
   }
   if (!measureCtx) return text.length * fontSize * 0.92
-  measureCtx.font = `700 ${fontSize}px Pretendard, "Segoe UI", sans-serif`
+  measureCtx.font = `700 ${fontSize}px Arial, sans-serif`
   return measureCtx.measureText(text).width
 }
 
